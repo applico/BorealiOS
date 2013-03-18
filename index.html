@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Borealios by applicoapps</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Borealios</h1>
+          <h2>Web Service LIbrary</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/applicoapps/BorealiOS/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/applicoapps/BorealiOS/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/applicoapps/BorealiOS" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <p>The BorealiOS Networking Framework is the set of classes that we use for doing URL requests in our iOS projects.
+We found that the existing libraries had a few issues that this library resolves.
+1. They do way more than we need or were more complicated in use than we liked.
+2. They don't have built in support authentication of web requests.
+3. Wanted to support both the delegate and callback block paradigms.
+4. They didn't provide centralized management of the requests.
+5. Needed custom timeout interval</p>
+
+<p>99% of our projects are doing non-complicated web requests involving JSON or binary data, thus keeping it all simple.</p>
+
+<p>The ANF is built entirely on top of NSURLConnection and is ARC compliant. For use in a non-ARC project please mark all files as <code>-fobjc-arc</code>.</p>
+
+<h1>Features of the Applico Networking Framework</h1>
+
+<ol>
+<li>Small and easy to integrate. There are only 5 source code files at its core.</li>
+<li>Authentication Protocol allows for development of custom authentication objects.</li>
+<li>Centralized WebServiceManager gives two ways of starting web requests:   asynchronously and synchronously</li>
+<li>Centralized WebServiceManager gives easy way to cancel a web request.</li>
+<li>Subclass WebServiceRequest to get custom creation and response handling for all of your web requests.</li>
+<li>Each WebServiceRequest supports callbacks via a delegate or a block.</li>
+<li>Keychain integration for saving and restoring authorization objects.</li>
+<li>Supports refreshing Auth Tokens and resumbitting a request after refreshing the Auth Token.</li>
+<li>Supports multiple authentication services, allowing for signing for different sites for separate requests at the same time.</li>
+<li>Supports setting exact timeout interval. Prior to iOS6 the NSURLConnections timeout interval has an undocumented minimum of 4 minutes for POST operations. Remove this limitation.</li>
+<li>Thread Safe</li>
+</ol><h1>Installation</h1>
+
+<p>Download the required files and add them to your xCode project. Make sure that the two .m files are added to the project's target. That's it.
+The five required files are:
+*WebServiceAuthProtocol.h
+*WebServiceManager.h
+*WebServiceManager.m
+*WebServiceRequest.h
+*WebServiceRequest.m</p>
+
+<h1>Examples</h1>
+
+<h2>Downloading an Image</h2>
+
+<div class="highlight"><pre>        <span class="n">NSString</span> <span class="o">*</span><span class="n">url</span> <span class="o">=</span> <span class="s">@"http://www.server.com/imagepath"</span><span class="p">;</span>
+
+        <span class="n">WebServiceCallbackBlock</span> <span class="n">progressBlock</span> <span class="o">=</span> <span class="o">^</span><span class="p">(</span><span class="kt">id</span> <span class="n">data</span><span class="p">,</span><span class="n">NSURLResponse</span> <span class="o">*</span><span class="n">response</span><span class="p">,</span><span class="n">NSError</span> <span class="o">*</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">//inform user about progress</span>
+        <span class="p">};</span>
+
+        <span class="n">WebServiceCallbackBlock</span> <span class="n">completionBlock</span> <span class="o">=</span> <span class="o">^</span><span class="p">(</span><span class="kt">id</span> <span class="n">data</span><span class="p">,</span><span class="n">NSURLResponse</span> <span class="o">*</span><span class="n">response</span><span class="p">,</span><span class="n">NSError</span> <span class="o">*</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">//handle error</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="c1">//display image</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+
+        <span class="n">WebServiceRequest</span> <span class="o">*</span><span class="n">req</span> <span class="o">=</span> <span class="p">[[</span><span class="n">WebServiceRequest</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">initWithURLRequest</span><span class="o">:</span><span class="p">[</span><span class="n">NSMutableURLRequest</span> <span class="n">requestWithURL</span><span class="o">:</span><span class="p">[</span><span class="n">NSURL</span> <span class="n">URLWithString</span><span class="o">:</span><span class="n">url</span><span class="p">]]</span>
+                                                                                                                                    <span class="nl">progress:</span><span class="n">progressBlock</span>
+                                                                                                                                <span class="nl">completion:</span><span class="n">completionBlock</span><span class="p">];</span>
+        <span class="p">[[</span><span class="n">WebServiceManager</span> <span class="n">sharedManager</span><span class="p">]</span> <span class="n">startAsync</span><span class="o">:</span><span class="n">req</span><span class="p">];</span>
+</pre></div>
+
+<h2>Performing an Authenticated Request</h2>
+
+<div class="highlight"><pre>        <span class="n">NSString</span> <span class="o">*</span><span class="n">url</span> <span class="o">=</span> <span class="s">@"http://www.server.com/imagepath"</span><span class="p">;</span>
+        <span class="n">NSString</span> <span class="o">*</span><span class="n">serviceIdentifier</span> <span class="o">=</span> <span class="s">@"myAuthService"</span><span class="p">;</span>
+
+        <span class="n">WebServiceCallbackBlock</span> <span class="n">progressBlock</span> <span class="o">=</span> <span class="o">^</span><span class="p">(</span><span class="kt">id</span> <span class="n">data</span><span class="p">,</span><span class="n">NSURLResponse</span> <span class="o">*</span><span class="n">response</span><span class="p">,</span><span class="n">NSError</span> <span class="o">*</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">//inform user about progress</span>
+        <span class="p">};</span>
+
+        <span class="n">WebServiceCallbackBlock</span> <span class="n">completionBlock</span> <span class="o">=</span> <span class="o">^</span><span class="p">(</span><span class="kt">id</span> <span class="n">data</span><span class="p">,</span><span class="n">NSURLResponse</span> <span class="o">*</span><span class="n">response</span><span class="p">,</span><span class="n">NSError</span> <span class="o">*</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">//handle error</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="c1">//display image</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+
+        <span class="n">WebServiceRequest</span> <span class="o">*</span><span class="n">req</span> <span class="o">=</span> <span class="p">[[</span><span class="n">WebServiceRequest</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">initWithURLRequest</span><span class="o">:</span><span class="p">[</span><span class="n">NSMutableURLRequest</span> <span class="n">requestWithURL</span><span class="o">:</span><span class="p">[</span><span class="n">NSURL</span> <span class="n">URLWithString</span><span class="o">:</span><span class="n">url</span><span class="p">]]</span>
+                                                                                                                                    <span class="nl">progress:</span><span class="n">progressBlock</span>
+                                                                                                                                <span class="nl">completion:</span><span class="n">completionBlock</span><span class="p">];</span>
+        <span class="p">[[</span><span class="n">WebServiceManager</span> <span class="n">sharedManager</span><span class="p">]</span> <span class="n">startAsync</span><span class="o">:</span><span class="n">req</span> <span class="n">authorizeForService</span><span class="o">:</span><span class="n">serviceIdentifier</span><span class="p">];</span>
+</pre></div>
+
+<h1>License</h1>
+
+<p>This software is released under the MIT License.
+The MIT License (MIT)
+Copyright (c) 2013 Applico Inc.</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+        </section>
+
+        <footer>
+          Borealios is maintained by <a href="https://github.com/applicoapps">applicoapps</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
