@@ -3,11 +3,14 @@ Web Service Framework.  It is the set of classes that we use for doing URL reque
 We found that the existing libraries had issues that this library resolves.
 
 These issues include:
+
+
 1. They add to much complexity and bloat than needed.  Large portions of functionality generally go unused.
 2. Authenticaiton support is lacking
 3. Wanted to support both the delegate and callback block paradigms.
 4. They didn't provide centralized management of the requests.
 5. Have no customization ability (including custom timeouts)
+
 
 99% of our projects are doing non-complicated web requests involving JSON or binary data, thus keeping it all simple is avantageous
 
