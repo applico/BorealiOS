@@ -1,7 +1,8 @@
 The BorealiOS Networking Framework was born out of Applico's (www.applicoinc.com) desire to control and implement thier own 
 Web Service Framework.  It is the set of classes that we use for doing URL requests in our iOS and Objective-C projects.
-We found that the existing libraries had issues that this library resolves. These issues include:
+We found that the existing libraries had issues that this library resolves.
 
+These issues include:
 1. They add to much complexity and bloat than needed.  Large portions of functionality generally go unused.
 2. Authenticaiton support is lacking
 3. Wanted to support both the delegate and callback block paradigms.
