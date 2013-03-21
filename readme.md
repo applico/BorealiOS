@@ -12,7 +12,7 @@ These issues include:
 5. Have no customization ability (including custom timeouts)
 
 
-99% of our projects are doing non-complicated web requests involving JSON or binary data, thus keeping it all simple is avantageous
+99% of our projects are doing non-complicated web requests involving JSON or binary data, thus keeping it all simple is advantageous
 
 The ANF (Applico Networking Framework) is built entirely on top of NSURLConnection and is ARC compliant. For use in a non-ARC project please mark all files as `-fobjc-arc`.
 
