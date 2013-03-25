@@ -7,9 +7,9 @@
 //
 /*
  * SVN revision information:
- * @version $Revision: 793 $:
+ * @version $Revision: 852 $:
  * @author  $Author: dsiebecker@applicoinc.com $:
- * @date    $Date: 2013-03-11 12:25:17 -0400 (Mon, 11 Mar 2013) $:
+ * @date    $Date: 2013-03-25 11:20:53 -0400 (Mon, 25 Mar 2013) $:
  */
 
 #import "WebServiceManager.h"
@@ -215,7 +215,7 @@ typedef void (^WebOperationBlock)();
 			//Not allowed, add to queue
 			[self.pendingRequests addObject:request];
 			if (service) {
-				[self.pendingRequestsAuthInfo setObject:service forKey:[NSNumber numberWithInt:request.requestIdentifier]];
+				[self.pendingRequestsAuthInfo setObject:service forKey:request.requestIdentifier];
 			}
 		} else {
 			//Let's get this puppy rolling
@@ -357,9 +357,9 @@ typedef void (^WebOperationBlock)();
 		if (self.pendingRequests.count > 0) {
 			WebServiceRequest *req = (WebServiceRequest*)[self.pendingRequests objectAtIndex:0];
 			[self.pendingRequests removeObject:req];
-			NSString *service = [self.pendingRequestsAuthInfo objectForKey:[NSNumber numberWithInt:req.requestIdentifier]];
+			NSString *service = [self.pendingRequestsAuthInfo objectForKey:req.requestIdentifier];
 			if (service) {
-				[self.pendingRequestsAuthInfo removeObjectForKey:[NSNumber numberWithInt:req.requestIdentifier]];
+				[self.pendingRequestsAuthInfo removeObjectForKey:req.requestIdentifier];
 			}
 			[self startAsync:req authorizeForService:service];
 		}

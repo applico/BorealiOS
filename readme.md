@@ -1,27 +1,27 @@
-The BorealiOS Networking Framework was born out of Applico's (www.applicoinc.com) desire to control and implement thier own 
-Web Service Framework.  It is the set of classes that we use for doing URL requests in our iOS and Objective-C projects.
-We found that the existing libraries had issues that this library resolves.
-
-These issues include:
-
-
-1. They add to much complexity and bloat than needed.  Large portions of functionality generally go unused.
-2. Authenticaiton support is lacking
+The BorealiOS Networking Framework is the set of classes that we use for doing URL requests in our iOS projects.
+We found that the existing libraries had a few issues that this library resolves.
+1. They do way more than we need or were more complicated in use than we liked.
+2. They don't have built in support authentication of web requests.
 3. Wanted to support both the delegate and callback block paradigms.
 4. They didn't provide centralized management of the requests.
-5. Have no customization ability (including custom timeouts)
+5. Needed custom timeout interval
 
+99% of our projects are doing non-complicated web requests involving JSON or binary data, thus keeping it all simple.
 
+<<<<<<< HEAD
 99% of our projects are doing non-complicated web requests involving JSON or binary data, thus keeping it all simple is advantageous
 
 The ANF (Applico Networking Framework) is built entirely on top of NSURLConnection and is ARC compliant. For use in a non-ARC project please mark all files as `-fobjc-arc`.
+=======
+The ANF is built entirely on top of NSURLConnection and is ARC compliant. For use in a non-ARC project please mark all files as `-fobjc-arc`.
+>>>>>>> bug fix and readme update
 
 Features of the Applico Networking Framework
 ============================================
 
 1. Small and easy to integrate. There are only 5 source code files at its core.
 2. Authentication Protocol allows for development of custom authentication objects.
-3. Centralized WebServiceManager gives two ways of starting web requests: asynchronously and synchronously
+3. Centralized WebServiceManager gives two ways of starting web requests:	asynchronously and synchronously
 4. Centralized WebServiceManager gives easy way to cancel a web request.
 5. Subclass WebServiceRequest to get custom creation and response handling for all of your web requests.
 6. Each WebServiceRequest supports callbacks via a delegate or a block.
@@ -40,6 +40,9 @@ The five required files are:
 *WebServiceManager.m
 *WebServiceRequest.h
 *WebServiceRequest.m
+
+In your project you also need to link against the "Security.framework"
+
 
 Examples
 ========
