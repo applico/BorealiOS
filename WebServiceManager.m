@@ -5,12 +5,6 @@
 //  Copyright (c) 2012 Applico Inc. All rights reserved.
 //
 //
-/*
- * SVN revision information:
- * @version $Revision: 852 $:
- * @author  $Author: dsiebecker@applicoinc.com $:
- * @date    $Date: 2013-03-25 11:20:53 -0400 (Mon, 25 Mar 2013) $:
- */
 
 #import "WebServiceManager.h"
 #import "WebServiceRequest.h"

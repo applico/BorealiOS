@@ -6,13 +6,6 @@
 //  Copyright (c) 2013 David Siebecker. All rights reserved.
 //
 
-/*
- * SVN revision information:
- * @version $Revision: 793 $:
- * @author  $Author: dsiebecker@applicoinc.com $:
- * @date    $Date: 2013-03-11 12:25:17 -0400 (Mon, 11 Mar 2013) $:
- */
-
 #import <Foundation/Foundation.h>
 #import "WebServiceRequest.h"
 

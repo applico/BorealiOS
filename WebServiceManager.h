@@ -5,12 +5,6 @@
 //  Copyright (c) 2012 Applico Inc. All rights reserved.
 //
 //
-/*
- * SVN revision information:
- * @version $Revision: 793 $:
- * @author  $Author: dsiebecker@applicoinc.com $:
- * @date    $Date: 2013-03-11 12:25:17 -0400 (Mon, 11 Mar 2013) $:
- */
 
 /* Coding TODOs
  * Check that resubmission code in startAsync works to prevent a request from being submitted too many times
