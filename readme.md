@@ -31,11 +31,11 @@ Installation
 Download the required files and add them to your xCode project. Make sure that the two .m files are added to the project's target. That's it.
 The five required files are:
 
-*WebServiceAuthProtocol.h
-*WebServiceManager.h
-*WebServiceManager.m
-*WebServiceRequest.h
-*WebServiceRequest.m
+* WebServiceAuthProtocol.h
+* WebServiceManager.h
+* WebServiceManager.m
+* WebServiceRequest.h
+* WebServiceRequest.m
 
 In your project you also need to link against the "Security.framework"
 
