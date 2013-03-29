@@ -88,8 +88,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>They didn't provide centralized management of the requests.</li>
 <li>Needed custom timeout interval</li>
 </ol>
-<p>99% of our projects are doing non-complicated web requests involving JSON or binary data, thus keeping it all simple.</p>
-<p>The ANF is built entirely on top of NSURLConnection and is ARC compliant. For use in a non-ARC project please mark all files as <code>-fobjc-arc</code>.</p>
+<p>99% of our projects are doing non-complicated web requests involving JSON or binary data, thus keeping it all simple is advantageous</p>
+<p>The ANF (Applico Networking Framework) is built entirely on top of NSURLConnection and is ARC compliant. For use in a non-ARC project please mark all files as <code>-fobjc-arc</code>.</p>
 <h1>Features of the Applico Networking Framework</h1>
 <ol type="1">
 <li>Small and easy to integrate. There are only 5 source code files at its core.</li>
@@ -105,7 +105,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Thread Safe</li>
 </ol>
 <h1>Installation</h1>
-<p>Download the required files and add them to your xCode project. Make sure that the two .m files are added to the project's target. That's it. The five required files are: *WebServiceAuthProtocol.h *WebServiceManager.h *WebServiceManager.m *WebServiceRequest.h *WebServiceRequest.m</p>
+<p>Download the required files and add them to your xCode project. Make sure that the two .m files are added to the project's target. That's it. The five required files are:</p>
+<ul>
+<li><a class="el" href="_web_service_auth_protocol_8h_source.html">WebServiceAuthProtocol.h</a></li>
+<li><a class="el" href="_web_service_manager_8h_source.html">WebServiceManager.h</a></li>
+<li>WebServiceManager.m</li>
+<li><a class="el" href="_web_service_request_8h_source.html">WebServiceRequest.h</a></li>
+<li>WebServiceRequest.m</li>
+</ul>
+<p>In your project you also need to link against the "Security.framework"</p>
 <h1>Examples</h1>
 <h2>Downloading an Image</h2>
 <p>```objc NSString *url = "<a href="http://www.server.com/imagepath">http://www.server.com/imagepath</a>";</p>
@@ -126,7 +134,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 18 2013 10:46:27 for BorealiOS Networking Library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 29 2013 09:38:23 for BorealiOS Networking Library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.3.1
 </small></address>

@@ -92,6 +92,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>WebServiceRequest.m</li>
 <li><a class="el" href="_web_service_auth_protocol_8h_source.html">WebServiceAuthProtocol.h</a></li>
 </ul>
+<p>In your project you also need to link against the "Security.framework"</p>
 <h2><a class="el" href="interface_web_service_request.html" title="The base WebServiceRequest class. Used for submission to the WebServiceManager. Implements the callba...">WebServiceRequest</a></h2>
 <p>WebServiceRequests are the base operation for defining where/what is going to happen. They are responsible for constructing an the NSURLRequest that gets submitted to the <a class="el" href="interface_web_service_manager.html" title="Class for managing web service requests This class has a sharedManager singleton object. Trying to allocate your own should get you the shared object.">WebServiceManager</a>. This class is designed to be subclassed so that very customized behavior for the creation of the NSURLRequest and the handling of the responses can be performed.</p>
 <p>Bare instances of this class can be created using the <code>initWithRequest:delegate:</code> or <code>initWithRequest:block</code> type methods. For example: </p>
@@ -121,7 +122,7 @@ WebServiceRequest *req = [[WebServiceRequest alloc] initWithURLRequest:urlReq
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 18 2013 10:46:27 for BorealiOS Networking Library by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 29 2013 09:38:23 for BorealiOS Networking Library by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.3.1
 </small></address>
