@@ -1,8 +1,7 @@
 //
 //  WebServiceRequest.m
 //
-//  Created by David Siebecker on 6/7/12.
-//  Copyright (c) 2012 Applico Inc. All rights reserved.
+//  Copyright (c) 2013 Applico Inc. All rights reserved.
 //
 
 #import "WebServiceRequest.h"
