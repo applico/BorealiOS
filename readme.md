@@ -1,20 +1,15 @@
 The BorealiOS Networking Framework is the set of classes that we use for doing URL requests in our iOS projects.
 We found that the existing libraries had a few issues that this library resolves.
+
 1. They do way more than we need or were more complicated in use than we liked.
 2. They don't have built in support authentication of web requests.
 3. Wanted to support both the delegate and callback block paradigms.
 4. They didn't provide centralized management of the requests.
 5. Needed custom timeout interval
 
-99% of our projects are doing non-complicated web requests involving JSON or binary data, thus keeping it all simple.
-
-<<<<<<< HEAD
 99% of our projects are doing non-complicated web requests involving JSON or binary data, thus keeping it all simple is advantageous
 
 The ANF (Applico Networking Framework) is built entirely on top of NSURLConnection and is ARC compliant. For use in a non-ARC project please mark all files as `-fobjc-arc`.
-=======
-The ANF is built entirely on top of NSURLConnection and is ARC compliant. For use in a non-ARC project please mark all files as `-fobjc-arc`.
->>>>>>> bug fix and readme update
 
 Features of the Applico Networking Framework
 ============================================
