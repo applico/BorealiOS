@@ -28,8 +28,9 @@ Features of the Applico Networking Framework
 
 Documentation
 =============
-Documentation for BorealiOS can be found at [the documentation page](http://applico.github.com/BorealiOS/documentation/ "BorealiOS Documenation")
-The project page is found here: [BorealiOS Project Page](http://applico.github.com/BorealiOS/ "BorealiOS Project Page")
+Documentation for BorealiOS can be found at [the documentation page](http://applico.github.com/BorealiOS/documentation/ "BorealiOS Documenation").
+
+The project page is found here: [BorealiOS Project Page](http://applico.github.com/BorealiOS/ "BorealiOS Project Page").
 
 Installation
 ============
