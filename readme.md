@@ -26,6 +26,11 @@ Features of the Applico Networking Framework
 10. Supports setting exact timeout interval. Prior to iOS6 the NSURLConnections timeout interval has an undocumented minimum of 4 minutes for POST operations. Remove this limitation.
 11. Thread Safe
 
+Documentation
+=============
+Documentation for BorealiOS can be found at [the documentation page](http://applico.github.com/BorealiOS/documentation/ "BorealiOS Documenation")
+The project page is found here: [BorealiOS Project Page](http://applico.github.com/BorealiOS/ "BorealiOS Project Page")
+
 Installation
 ============
 Download the required files and add them to your xCode project. Make sure that the two .m files are added to the project's target. That's it.
