@@ -32,6 +32,8 @@ Documentation for BorealiOS can be found at [the documentation page](http://appl
 
 The project page is found here: [BorealiOS Project Page](http://applico.github.com/BorealiOS/ "BorealiOS Project Page").
 
+We also have a discussion group, applico_borealios@googlegroups.com.
+
 Installation
 ============
 Download the required files and add them to your xCode project. Make sure that the two .m files are added to the project's target. That's it.
