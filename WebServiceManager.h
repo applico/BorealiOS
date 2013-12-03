@@ -1,15 +1,31 @@
 //
 //  WebServiceManager.h
 //
-//  Copyright (c) 2013 Applico Inc. All rights reserved.
+//  Created by David Siebecker on 9/7/12.
+//  Copyright (c) 2012 Applico Inc. All rights reserved.
 //
 //
+/*
+ * SVN revision information:
+ * @version $Revision: 625 $:
+ * @author  $Author: dsiebecker@applicoinc.com $:
+ * @date    $Date: 2013-07-15 13:39:09 -0400 (Mon, 15 Jul 2013) $:
+ */
+
+/* Coding TODOs
+ * Check that resubmission code in startAsync works to prevent a request from being submitted too many times
+ */
 
 #import "WebServiceRequest.h"
 #import "WebServiceAuthProtocol.h"
+#import <Foundation/Foundation.h>
+#import <SystemConfiguration/SystemConfiguration.h>
 
 #define NO_AUTH_OBJECT_FOR_SERVICE_DICT(__SERVICE__) [NSDictionary dictionaryWithObject:__SERVICE__ forKey:@"SuppliedService"]
+#define LOCALIZED_ERROR_STRING(__STRING__) [NSDictionary dictionaryWithObject:__STRING__ forKey:NSLocalizedDescriptionKey]
 #define NO_AUTH_ERROR_CODE 10011101
+#define NOT_CONNECTED_ERROR_CODE 10011102
+#define WIFI_REQUIRED_ERROR_CODE 10011103
 
 #define MIME_TYPE_JSON @"application/json" /**< Text for JSON content type */
 #define MIME_TYPE_HTML @"text/html" /**< Text for html content type */
@@ -37,6 +53,23 @@
 
 @property (nonatomic,assign) NSUInteger maxAllowedConnections; /**< Maximum number of simultaneous connections allowed.*/
 @property (nonatomic,assign) NSTimeInterval timeoutInterval; /**< Time out interval. Allows for a custom time-out on webrequests.*/
+@property (atomic) SCNetworkReachabilityFlags reachFlags; /**< The current reachability status */
+
+/**
+ *@brief Start reachability testing for the specified host name.
+ *@param host the hostname to use for reachablity testing.
+ */
+-(void)startReachabilityForHostName:(NSString *)host;
+
+/**
+ *@brief Start reachability testing using a default host name.
+ */
+-(void)startReachability;
+
+/**
+ *@brief Stop reachability testing if running.
+ */
+-(void)stopReachability;
 
 /**
  *@brief Starts a webservice request syncronously
@@ -51,20 +84,46 @@
 -(void)startAsync:(WebServiceRequest*)request;
 
 /**
- *@brief Starts a webservice request syncronously. If possible it will authorize the request with the current OAuth2 Token
- *Will refresh the token if necessary
+ *@brief Starts a webservice request syncronously.
+ * If possible it will authorize the request with the current OAuth2 Token, otherwise it will throw an error.
+ * Will refresh the token if necessary
  *@param request the webservice request to be started.
  *@param service the name of the service which should sign the request
  */
 -(void)startSync:(WebServiceRequest*)request authorizeForService:(NSString*)service;
 
 /**
- *@brief Starts a webservice request asyncronously. If possible it will authorize the request with the current OAuth2 Token
- *Will refresh the token if necessary
+ *@brief Starts a webservice request asyncronously. 
+ * If possible it will authorize the request with the current OAuth2 Token, otherwise it will throw an error.
+ * Will refresh the token if necessary
  *@param request the webservice request to be started.
  *@param service the name of the service which should sign the request
  */
 -(void)startAsync:(WebServiceRequest*)request authorizeForService:(NSString*)service;
+
+
+/**
+ *@brief Starts a webservice request syncronously. 
+ * If possible it will authorize the request with the current OAuth2 Token.
+ * Will throw an error if there is no auth and the require flag is true.
+ * Otherwise it will submit the request without authorization.
+ * Will refresh the token if necessary
+ *@param request the webservice request to be started.
+ *@param service the name of the service which should sign the request
+ */
+-(void)startSync:(WebServiceRequest*)request authorizeForService:(NSString*)service requireAuth:(BOOL)requireAuth;
+
+/**
+ *@brief Starts a webservice request asyncronously. 
+ * If possible it will authorize the request with the current OAuth2 Token.
+ * Will throw an error if there is no auth and the require flag is true.
+ * Otherwise it will submit the request without authorization.
+ * Will refresh the token if necessary
+ *@param request the webservice request to be started.
+ *@param service the name of the service which should sign the request
+ */
+-(void)startAsync:(WebServiceRequest*)request authorizeForService:(NSString*)service requireAuth:(BOOL)requireAuth;
+
 
 /**
  *@brief cancels a web request
@@ -96,6 +155,25 @@
  *@return the request that has already been started.
  */
 -(WebServiceRequest*)downloadDataForUrl:(NSURL*)url progress:(WebServiceCallbackBlock)progressBlock completion:(WebServiceCallbackBlock)completionBlock;
+
+/**
+ *@brief Provides a quick method for downloading data from a url. Does callbacks with a delegate.  This request will not go over the cellular network.
+ *Starts the request asyncronously
+ *@param url the url for which the download is to be performed
+ *@param delegate the webservice delegate for callback
+ *@return the request that has already been started.
+ */
+-(WebServiceRequest*)downloadDataForUrlOverWIFI:(NSURL*)url delegate:(id<WebServiceDelegate>) delegate;
+
+/**
+ *@brief Provides a quick method for downloading data from a url. Does callbacks with blocks This request will not go over the cellular network.
+ *Starts the request asyncronously
+ *@param url the url for which the download is to be performed
+ *@param progressBlock the progress callback block
+ *@param completionBlock the completion callback block
+ *@return the request that has already been started.
+ */
+-(WebServiceRequest*)downloadDataForUrlOverWIFI:(NSURL*)url progress:(WebServiceCallbackBlock)progressBlock completion:(WebServiceCallbackBlock)completionBlock;
 
 
 #pragma mark - Authorization Service Methods

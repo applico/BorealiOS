@@ -1,8 +1,15 @@
 //
 //  WebServiceRequest.h
 //
-//  Copyright (c) 2013 Applico Inc. All rights reserved.
+//  Created by David Siebecker on 6/7/12.
+//  Copyright (c) 2012 Applico Inc. All rights reserved.
 //
+/*
+ * SVN revision information:
+ * @version $Revision: 266 $:
+ * @author  $Author: rpetit@applicoinc.com $:
+ * @date    $Date: 2013-05-20 19:44:58 -0400 (Mon, 20 May 2013) $:
+ */
 
 #import <Foundation/Foundation.h>
 
@@ -127,5 +134,6 @@ typedef void (^WebServiceCallbackBlock)(id data,NSURLResponse *response,NSError 
 @property (nonatomic,strong,readonly) WebServiceCallbackBlock progressCallback;/**< progress block. readonly because we won't want to allow for changing or having both delegate and blocks. set via init */
 
 @property (nonatomic,strong) NSNumber *requestIdentifier; /**< This property is used by the WebServiceManager, do not change or set or override */
+@property (nonatomic) NSInteger requiresWIFI; /**< Tell the WebServiceManager that this request should not be handled by the cellular data network.  The default is NO */
 
 @end

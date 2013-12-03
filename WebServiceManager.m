@@ -1,14 +1,22 @@
 //
 //  WebServiceManager.m
 //
-//  Copyright (c) 2013 Applico Inc. All rights reserved.
+//  Created by David Siebecker on 9/7/12.
+//  Copyright (c) 2012 Applico Inc. All rights reserved.
 //
 //
+/*
+ * SVN revision information:
+ * @version $Revision: 742 $:
+ * @author  $Author: dsiebecker@applicoinc.com $:
+ * @date    $Date: 2013-07-26 15:04:14 -0400 (Fri, 26 Jul 2013) $:
+ */
 
 #import "WebServiceManager.h"
 #import "WebServiceRequest.h"
 #include <libkern/OSAtomic.h> //needed for keychain saving
 #import <Security/Security.h> //needed for keychain saving
+#import <CoreFoundation/CoreFoundation.h>
 
 #define MAX_CONNECTIONS 10 /**< This is the hard cap max, to keep someone from really boinking the iDevice. Change as needed */
 #define DEFAULT_TIMEOUT_INTERVAL 300.0f
@@ -60,6 +68,7 @@ typedef void (^WebOperationBlock)();
 @property (nonatomic,strong) NSMutableArray *pendingRequests; /**< Used to manage pending requests */
 @property (nonatomic,strong) NSMutableDictionary *pendingRequestsAuthInfo; /**< Keeps track of auth information for pending requests */
 @property (nonatomic,strong) NSMutableDictionary *authTokenInfo; /**< Contains a mapping of service to auth information */
+@property (nonatomic) SCNetworkReachabilityRef reachRef; /**< The currently active reachability reference */
 
 /** 
  * @brief Gets an object adhering to the WebServiceAuthProtocol from the keychain
@@ -74,7 +83,7 @@ typedef void (^WebOperationBlock)();
 /**
  * @brief Private method for starting a request
  */
--(void)startRequest:(WebServiceRequest*)wRequest urlRequest:(NSMutableURLRequest*)urlRequest async:(BOOL)asyncFlag service:(NSString*)service opBlock:(WebOperationBlock)operationBloc;
+-(void)startRequest:(WebServiceRequest*)wRequest urlRequest:(NSMutableURLRequest*)urlRequest async:(BOOL)asyncFlag service:(NSString*)service requireAuth:(BOOL)requireAuth opBlock:(WebOperationBlock)operationBloc;
 /**
  * @brief Handles removing an object from the connection caches
  * Will also will start the next pending request, if there are any.
@@ -156,12 +165,83 @@ typedef void (^WebOperationBlock)();
 @synthesize maxAllowedConnections = _maxAllowedConnections;
 @synthesize pendingRequests = _pendingRequests;
 @synthesize timeoutInterval = _timeoutInterval;
+@synthesize reachRef = _reachRef;
+@synthesize reachFlags = _reachFlags;
+
+/**
+ * @brief We need to have dealloc called to release the reachability reference.
+ */
+-(void)dealloc
+{
+    if (self.reachRef) {
+        SCNetworkReachabilityUnscheduleFromRunLoop(self.reachRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+        CFRelease(self.reachRef);
+        self.reachRef = NULL;
+    }
+}
 
 /**
  * @brief We override the default setter for this property to ensure that the app doesn't set this too high
  */
 -(void)setMaxAllowedConnections:(NSUInteger)maxAllowedConnections {
 	_maxAllowedConnections = maxAllowedConnections < MAX_CONNECTIONS ? maxAllowedConnections : MAX_CONNECTIONS;
+}
+
+static void ReachabilityCallback(SCNetworkReachabilityRef ref, SCNetworkReachabilityFlags flags, void *info) {
+    [WebServiceManager sharedManager].reachFlags = flags;
+}
+
+-(void)startReachabilityForHostName:(NSString *)host
+{
+    // If there is an existing reachability reference, unschedule it first
+    if (self.reachRef) {
+        SCNetworkReachabilityUnscheduleFromRunLoop(self.reachRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+        CFRelease(self.reachRef);
+    }
+    
+    SCNetworkReachabilityRef reachRef = SCNetworkReachabilityCreateWithName(NULL, [host UTF8String]);
+    SCNetworkReachabilityFlags flags = 0;
+    if (SCNetworkReachabilityGetFlags(reachRef, &flags)) {
+        NSLog(@"Reachability running.");
+        self.reachFlags = flags;
+        self.reachRef = reachRef;
+        SCNetworkReachabilityContext context = {0, (void*)CFBridgingRetain(self), NULL, NULL, NULL};
+        SCNetworkReachabilitySetCallback(reachRef, ReachabilityCallback, &context);
+        SCNetworkReachabilityScheduleWithRunLoop(self.reachRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+    } else {
+        NSLog(@"Unable to get reachability info.");
+    }
+}
+
+-(void)startReachability
+{
+    [self startReachabilityForHostName:@"www.apple.com"];
+}
+
+-(void)stopReachability
+{
+    // If there is an existing reachability reference, unschedule it first
+    if (self.reachRef) {
+        SCNetworkReachabilityUnscheduleFromRunLoop(self.reachRef, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+        CFRelease(self.reachRef);
+        self.reachRef = NULL;
+    }
+}
+-(BOOL)testReachability:(WebServiceRequest *)request async:(BOOL)asyncFlag
+{
+    BOOL ret = YES;
+    
+    if (self.reachRef) {
+        if (!(self.reachFlags & kSCNetworkReachabilityFlagsReachable)) {
+            [request handleWebServiceResponse:nil data:nil error:[NSError errorWithDomain:@"com.webservicemanager.error" code:NOT_CONNECTED_ERROR_CODE userInfo:LOCALIZED_ERROR_STRING(NSLocalizedString(@"No network connection", nil))] asyncFlag:asyncFlag];
+            ret = NO;
+        } else if ((self.reachFlags & kSCNetworkReachabilityFlagsIsWWAN) && request.requiresWIFI) {
+            [request handleWebServiceResponse:nil data:nil error:[NSError errorWithDomain:@"com.webservicemanager.error" code:WIFI_REQUIRED_ERROR_CODE userInfo:LOCALIZED_ERROR_STRING(NSLocalizedString(@"Only cellular network available", nil))] asyncFlag:asyncFlag];
+            ret = NO;
+        }
+    }
+    
+    return ret;
 }
 
 /*
@@ -185,7 +265,11 @@ typedef void (^WebOperationBlock)();
  * The code for this method is performed in an @synchronized block so that 
  * handling of requests on/off the pending request queue is all synchronized.
  */
--(void)startAsync:(WebServiceRequest*)request authorizeForService:(NSString*)service
+-(void)startAsync:(WebServiceRequest*)request authorizeForService:(NSString*)service {
+	[self startAsync:request authorizeForService:service requireAuth:YES];
+}
+
+-(void)startAsync:(WebServiceRequest*)request authorizeForService:(NSString*)service requireAuth:(BOOL)requireAuth
 {
 	@synchronized(self) {
 		//check to see if this request has already been submitted. If it has, we do nothing
@@ -216,26 +300,36 @@ typedef void (^WebOperationBlock)();
 			//Doing it in a block like this allows us to perform this code from a couple of different spots
 			//Yay for OOP
 			NSMutableURLRequest *urlRequest = [request urlrequest];
+            if (request.requiresWIFI) {
+                [urlRequest setAllowsCellularAccess:NO];
+            }
 			WebOperationBlock operationBloc = ^{
 				NSURLConnection *connection;
 				connection = [[AURLConnection alloc] initWithWebRequest:request urlRequest:urlRequest delegate:self];
 				
 				[self.connections setObject:connection forKey:request.requestIdentifier];
+//				NSLog(@"Started: %@",urlRequest);
 				[connection start];
 			};
-			
 			//then more OOP to use a shared method for actually starting the request
-			[self startRequest:request urlRequest:urlRequest async:YES service:service opBlock:operationBloc];
+			[self startRequest:request urlRequest:urlRequest async:YES service:service requireAuth:requireAuth opBlock:operationBloc];
 		}
 	}
 }
 
--(void)startSync:(WebServiceRequest*)request authorizeForService:(NSString*)service
+-(void)startSync:(WebServiceRequest*)request authorizeForService:(NSString*)service {
+	[self startSync:request authorizeForService:service requireAuth:YES];
+}
+
+-(void)startSync:(WebServiceRequest*)request authorizeForService:(NSString*)service requireAuth:(BOOL)requireAuth
 {
 	//Let's get this puppy rolling
 	//We generate the URLRequest and setup the operation block that will actually start it.
 	//Doing it in a block like this allows us to perform this code from a couple of different spots
 	NSMutableURLRequest *urlRequest = [request urlrequest];
+    if (request.requiresWIFI) {
+        [urlRequest setAllowsCellularAccess:NO];
+    }
 	WebOperationBlock operationBloc = ^{
 		
 		NSError *error = nil;
@@ -245,38 +339,47 @@ typedef void (^WebOperationBlock)();
 	};
 
 	//then more OOP to use a shared method for actually starting the request
-	[self startRequest:request urlRequest:urlRequest async:NO service:service opBlock:operationBloc];
+	[self startRequest:request urlRequest:urlRequest async:NO service:service requireAuth:requireAuth opBlock:operationBloc];
 }
 
--(void)startRequest:(WebServiceRequest*)wRequest urlRequest:(NSMutableURLRequest*)urlRequest async:(BOOL)asyncFlag service:(NSString*)service opBlock:(WebOperationBlock)operationBloc {
-	if (service) {
-		id<WebServiceAuthProtocol> tokenInfo = [self tokenForService:service];
-		//If an auth service is specified, attempt to do the signing
-		//and if necessary reauth the service
-		if (tokenInfo == nil) {
-			//there is no auth object for this service, throw an error
-			[wRequest handleWebServiceResponse:nil data:nil error:[NSError errorWithDomain:@"com.webservicemanager.error" code:NO_AUTH_ERROR_CODE userInfo:NO_AUTH_OBJECT_FOR_SERVICE_DICT(service)] asyncFlag:asyncFlag];
-		} else if ([tokenInfo signRequestIfNecesary:urlRequest]) {
-			//couldn't sign because the token was expired, refresh the token
-			[tokenInfo updateAccessToken:^(id data,NSURLResponse *response,NSError* error) {
-				if (error == nil) {
-					if ([tokenInfo signRequestIfNecesary:urlRequest]) {
-						//still having a problem signing, throw error
-						[wRequest handleWebServiceResponse:nil data:nil error:[tokenInfo reauthError] asyncFlag:YES];
-					} else {
-						operationBloc();
-					}
-				} else {
-					[wRequest handleWebServiceResponse:nil data:nil error:error asyncFlag:YES];
-				}
-			} async:asyncFlag];
-		} else {
-			//the request was signed, start the request
-			operationBloc();
-		}
-	} else {
-		operationBloc();
-	}
+
+-(void)startRequest:(WebServiceRequest*)wRequest urlRequest:(NSMutableURLRequest*)urlRequest async:(BOOL)asyncFlag service:(NSString*)service requireAuth:(BOOL)requireAuth opBlock:(WebOperationBlock)operationBloc {
+    // Check for reachability.  Note thtat testReachability: will call handleWebServiceResponse if
+    // there is a reachability issue
+    if ([self testReachability:wRequest async:asyncFlag]) {
+        if (service) {
+            id<WebServiceAuthProtocol> tokenInfo = [self tokenForService:service];
+            //If an auth service is specified, attempt to do the signing
+            //and if necessary reauth the service
+            if (tokenInfo == nil) {
+							if (requireAuth) {
+                //there is no auth object for this service, throw an error
+                [wRequest handleWebServiceResponse:nil data:nil error:[NSError errorWithDomain:@"com.webservicemanager.error" code:NO_AUTH_ERROR_CODE userInfo:NO_AUTH_OBJECT_FOR_SERVICE_DICT(service)] asyncFlag:asyncFlag];
+							} else {
+								operationBloc();
+							}							
+            } else if ([tokenInfo signRequestIfNecesary:urlRequest]) {
+                //couldn't sign because the token was expired, refresh the token
+                [tokenInfo updateAccessToken:^(id data,NSURLResponse *response,NSError* error) {
+                    if (error == nil) {
+                        if ([tokenInfo signRequestIfNecesary:urlRequest]) {
+                            //still having a problem signing, throw error
+                            [wRequest handleWebServiceResponse:nil data:nil error:[tokenInfo reauthError] asyncFlag:YES];
+                        } else {
+                            operationBloc();
+                        }
+                    } else {
+                        [wRequest handleWebServiceResponse:nil data:nil error:error asyncFlag:YES];
+                    }
+                } async:asyncFlag];
+            } else {
+                //the request was signed, start the request
+                operationBloc();
+            }
+        } else {
+            operationBloc();
+        }
+    }
 }
 
 /*
@@ -422,6 +525,22 @@ typedef void (^WebOperationBlock)();
   WebServiceRequest *request = [[WebServiceRequest alloc] initWithURLRequest:[NSURLRequest requestWithURL:url] progress:progressBlock completion:completionBlock];
   [self startAsync:request];
   return request;
+}
+
+//nothing special here
+-(WebServiceRequest*)downloadDataForUrlOverWIFI:(NSURL*)url delegate:(id<WebServiceDelegate>) delegate {
+    WebServiceRequest *request = [[WebServiceRequest alloc] initWithURLRequest:[NSURLRequest requestWithURL:url] delegate:delegate];
+    request.requiresWIFI = YES;
+    [self startAsync:request];
+    return request;
+}
+
+//nothing special here
+-(WebServiceRequest*)downloadDataForUrlOverWIFI:(NSURL *)url progress:(WebServiceCallbackBlock)progressBlock completion:(WebServiceCallbackBlock)completionBlock {
+    WebServiceRequest *request = [[WebServiceRequest alloc] initWithURLRequest:[NSURLRequest requestWithURL:url] progress:progressBlock completion:completionBlock];
+    request.requiresWIFI = YES;
+    [self startAsync:request];
+    return request;
 }
 
 #pragma mark - Auth Methods

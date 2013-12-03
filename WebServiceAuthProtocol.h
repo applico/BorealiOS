@@ -1,8 +1,17 @@
 //
 //  WebServiceAuthProtocol.h
+//  WebServiceFrameWorkExample
 //
+//  Created by David Siebecker on 2/5/13.
 //  Copyright (c) 2013 Applico Inc. All rights reserved.
 //
+
+/*
+ * SVN revision information:
+ * @version $Revision: 95 $:
+ * @author  $Author: dsiebecker@applicoinc.com $:
+ * @date    $Date: 2013-04-03 17:42:26 -0400 (Wed, 03 Apr 2013) $:
+ */
 
 #import <Foundation/Foundation.h>
 #import "WebServiceRequest.h"

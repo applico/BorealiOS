@@ -1,8 +1,15 @@
 //
 //  WebServiceRequest.m
 //
-//  Copyright (c) 2013 Applico Inc. All rights reserved.
+//  Created by David Siebecker on 6/7/12.
+//  Copyright (c) 2012 Applico Inc. All rights reserved.
 //
+/*
+ * SVN revision information:
+ * @version $Revision: 372 $:
+ * @author  $Author: rpetit@applicoinc.com $:
+ * @date    $Date: 2013-06-06 09:59:32 -0400 (Thu, 06 Jun 2013) $:
+ */
 
 #import "WebServiceRequest.h"
 
@@ -37,6 +44,9 @@
 		//just want to make it clear
 		//it doesn't get assigned until it is submitted to the WebServiceManager
 		_requestIdentifier = nil;
+        
+        // Default to using either Wifi or cellular if reachability is enabled.
+        _requiresWIFI = NO;
 	}
 	return self;
 }
@@ -112,6 +122,13 @@
 
 -(void)handleWebServiceResponse:(NSURLResponse*)response data:(NSData*)responseData error:(NSError*)error asyncFlag:(BOOL)isAsync
 {
+    // Catch an HTTP protocol error...
+    if (!error) {
+        NSInteger code = ((NSHTTPURLResponse *)response).statusCode;
+        if ((code != 200) && (code != 201)) {
+            error = [NSError errorWithDomain:@"HTTP" code:code userInfo:nil];
+        }
+    }
 	if (_completionCallback) {
 		_completionCallback(responseData,response,error);
 	}
