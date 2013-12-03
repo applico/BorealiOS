@@ -1,23 +1,5 @@
 //
 //  OAuth2Token.h
-//  WebServiceFrameWorkExample
-//
-//  Created by David Siebecker on 2/5/13.
-//  Copyright (c) 2013 Applico Inc. All rights reserved.
-//
-/*
- * SVN revision information:
- * @version $Revision: 204 $:
- * @author  $Author: rpetit@applicoinc.com $:
- * @date    $Date: 2013-05-10 16:14:44 -0400 (Fri, 10 May 2013) $:
- */
-
-/************************************************
- * Development todos
- * -add in maximum request code
- * -add in post OAuth2 operations - not required, the standard indicates that they all servers support GET operations
- ***********************************************/
-
 
 #import <Foundation/Foundation.h>
 #import "WebServiceAuthProtocol.h"

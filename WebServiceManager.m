@@ -1,16 +1,5 @@
 //
 //  WebServiceManager.m
-//
-//  Created by David Siebecker on 9/7/12.
-//  Copyright (c) 2012 Applico Inc. All rights reserved.
-//
-//
-/*
- * SVN revision information:
- * @version $Revision: 742 $:
- * @author  $Author: dsiebecker@applicoinc.com $:
- * @date    $Date: 2013-07-26 15:04:14 -0400 (Fri, 26 Jul 2013) $:
- */
 
 #import "WebServiceManager.h"
 #import "WebServiceRequest.h"

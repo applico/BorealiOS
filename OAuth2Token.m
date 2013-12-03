@@ -1,17 +1,5 @@
 //
 //  OAuth2Token.m
-//  WebServiceFrameWorkExample
-//
-//  Created by David Siebecker on 2/5/13.
-//  Copyright (c) 2013 Applico Inc. All rights reserved.
-//
-
-/*
- * SVN revision information:
- * @version $Revision: 742 $:
- * @author  $Author: dsiebecker@applicoinc.com $:
- * @date    $Date: 2013-07-26 15:04:14 -0400 (Fri, 26 Jul 2013) $:
- */
 
 #import "OAuth2Token.h"
 #import "OAuth2Defines.h"

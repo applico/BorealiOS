@@ -1,20 +1,5 @@
 //
 //  WebServiceManager.h
-//
-//  Created by David Siebecker on 9/7/12.
-//  Copyright (c) 2012 Applico Inc. All rights reserved.
-//
-//
-/*
- * SVN revision information:
- * @version $Revision: 625 $:
- * @author  $Author: dsiebecker@applicoinc.com $:
- * @date    $Date: 2013-07-15 13:39:09 -0400 (Mon, 15 Jul 2013) $:
- */
-
-/* Coding TODOs
- * Check that resubmission code in startAsync works to prevent a request from being submitted too many times
- */
 
 #import "WebServiceRequest.h"
 #import "WebServiceAuthProtocol.h"

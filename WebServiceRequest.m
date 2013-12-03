@@ -1,15 +1,5 @@
 //
 //  WebServiceRequest.m
-//
-//  Created by David Siebecker on 6/7/12.
-//  Copyright (c) 2012 Applico Inc. All rights reserved.
-//
-/*
- * SVN revision information:
- * @version $Revision: 372 $:
- * @author  $Author: rpetit@applicoinc.com $:
- * @date    $Date: 2013-06-06 09:59:32 -0400 (Thu, 06 Jun 2013) $:
- */
 
 #import "WebServiceRequest.h"
 
