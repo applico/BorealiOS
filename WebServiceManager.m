@@ -504,21 +504,21 @@ static void ReachabilityCallback(SCNetworkReachabilityRef ref, SCNetworkReachabi
 
 //nothing special here
 -(WebServiceRequest*)downloadDataForUrl:(NSURL*)url delegate:(id<WebServiceDelegate>) delegate {
-  WebServiceRequest *request = [[WebServiceRequest alloc] initWithURLRequest:[NSURLRequest requestWithURL:url] delegate:delegate];
+  WebServiceRequest *request = [[WebServiceRequest alloc] initWithURLRequest:[NSMutableURLRequest requestWithURL:url] delegate:delegate];
   [self startAsync:request];
   return request;
 }
 
 //nothing special here
 -(WebServiceRequest*)downloadDataForUrl:(NSURL*)url progress:(WebServiceCallbackBlock)progressBlock completion:(WebServiceCallbackBlock)completionBlock {
-  WebServiceRequest *request = [[WebServiceRequest alloc] initWithURLRequest:[NSURLRequest requestWithURL:url] progress:progressBlock completion:completionBlock];
+  WebServiceRequest *request = [[WebServiceRequest alloc] initWithURLRequest:[NSMutableURLRequest requestWithURL:url] progress:progressBlock completion:completionBlock];
   [self startAsync:request];
   return request;
 }
 
 //nothing special here
 -(WebServiceRequest*)downloadDataForUrlOverWIFI:(NSURL*)url delegate:(id<WebServiceDelegate>) delegate {
-    WebServiceRequest *request = [[WebServiceRequest alloc] initWithURLRequest:[NSURLRequest requestWithURL:url] delegate:delegate];
+    WebServiceRequest *request = [[WebServiceRequest alloc] initWithURLRequest:[NSMutableURLRequest requestWithURL:url] delegate:delegate];
     request.requiresWIFI = YES;
     [self startAsync:request];
     return request;
@@ -526,7 +526,7 @@ static void ReachabilityCallback(SCNetworkReachabilityRef ref, SCNetworkReachabi
 
 //nothing special here
 -(WebServiceRequest*)downloadDataForUrlOverWIFI:(NSURL *)url progress:(WebServiceCallbackBlock)progressBlock completion:(WebServiceCallbackBlock)completionBlock {
-    WebServiceRequest *request = [[WebServiceRequest alloc] initWithURLRequest:[NSURLRequest requestWithURL:url] progress:progressBlock completion:completionBlock];
+    WebServiceRequest *request = [[WebServiceRequest alloc] initWithURLRequest:[NSMutableURLRequest requestWithURL:url] progress:progressBlock completion:completionBlock];
     request.requiresWIFI = YES;
     [self startAsync:request];
     return request;
